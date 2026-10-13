@@ -1,0 +1,30 @@
+html {
+    pointer-events: none;
+    overscroll-behavior: contain;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+#game {
+    pointer-events: none;
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    position: absolute;
+    margin: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #333;
+    background-size: cover;
+    /*image-rendering: pixelated;*/
+    transition: filter 1s;
+}
