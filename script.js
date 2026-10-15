@@ -1,7 +1,4 @@
-//No Mice! >:( no why :(
-//You are a shiny blue orb. You roll around with the A and D keys. The direction of the shine on the orb is the direction you are facing. When you press W, you launch in the direction you are facing. The longer you hold w, the more flattened the orb gets and the harder you will launch when you let go. You can charge in the air and cant land on your bottom or you bounce.
-//Also pretty please with a cherry on top add ellipse physics when rolling with charge.
-//If too hard then pause player position and zero velocity while charging.
+import * as Mathutils from "./mathutils.js";
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -28,89 +25,6 @@ window.onkeyup = function(e) {
 
 window.onkeydown = function(e) {
     pressedKeys[e.keyCode] = true;
-}
-
-Math.dist = function(x1, y1, x2, y2) {
-    if (!x2) x2 = 0;
-    if (!y2) y2 = 0;
-    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-}
-
-Math.rotate = function(cx, cy, x, y, angle) {
-    var radians = (Math.PI / 180) * -angle,
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-    return [nx, ny];
-}
-
-Math.normalize = function(cx, cy, x, y, r) {
-    const ratio = r / Math.dist(cx, cy, x, y);
-    const nx = (x - cx) * ratio;
-    const ny = (y - cy) * ratio;
-    if (nx && ny) {
-        return [nx, ny];
-    }
-    return [0, 0];
-}
-
-Math.reflect = function(vx1, vy1, vx2, vy2) {
-    const dotProduct = vx1 * vx2 + vy1 * vy2;
-    const magnitudeSquared = vx2 * vx2 + vy2 * vy2;
-    const reflectedX = vx1 - 2 * dotProduct * (vx2 / magnitudeSquared);
-    const reflectedY = vy1 - 2 * dotProduct * (vy2 / magnitudeSquared);
-    return [reflectedX, reflectedY];
-}
-
-Math.project = function(vx1, vy1, vx2, vy2) {
-    const dotProduct = vx1 * vx2 + vy1 * vy2;
-    const magnitudeSquared = vx2 * vx2 + vy2 * vy2;
-    const scalar = dotProduct / magnitudeSquared;
-    const projectedX = scalar * vx2;
-    const projectedY = scalar * vy2;
-    return [projectedX, projectedY];
-}
-
-const pSBC = (p, c0, c1, l) => {
-    let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (c1) == "string";
-    if (typeof (p) != "number" || p < -1 || p > 1 || typeof (c0) != "string" || (c0[0] != 'r' && c0[0] != '#') || (c1 && !a)) return null;
-    if (!this.pSBCr) this.pSBCr = (d) => {
-        let n = d.length, x = {};
-        if (n > 9) {
-            [r, g, b, a] = d = d.split(","), n = d.length;
-            if (n < 3 || n > 4) return null;
-            x.r = i(r[3] == "a" ? r.slice(5) : r.slice(4)), x.g = i(g), x.b = i(b), x.a = a ? parseFloat(a) : -1
-        } else {
-            if (n == 8 || n == 6 || n < 4) return null;
-            if (n < 6) d = "#" + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (n > 4 ? d[4] + d[4] : "");
-            d = i(d.slice(1), 16);
-            if (n == 9 || n == 5) x.r = d >> 24 & 255, x.g = d >> 16 & 255, x.b = d >> 8 & 255, x.a = m((d & 255) / 0.255) / 1000;
-            else x.r = d >> 16, x.g = d >> 8 & 255, x.b = d & 255, x.a = -1
-        } return x
-    };
-    h = c0.length > 9, h = a ? c1.length > 9 ? true : c1 == "c" ? !h : false : h, f = this.pSBCr(c0), P = p < 0, t = c1 && c1 != "c" ? this.pSBCr(c1) : P ? { r: 0, g: 0, b: 0, a: -1 } : { r: 255, g: 255, b: 255, a: -1 }, p = P ? p * -1 : p, P = 1 - p;
-    if (!f || !t) return null;
-    if (l) r = m(P * f.r + p * t.r), g = m(P * f.g + p * t.g), b = m(P * f.b + p * t.b);
-    else r = m((P * f.r ** 2 + p * t.r ** 2) ** 0.5), g = m((P * f.g ** 2 + p * t.g ** 2) ** 0.5), b = m((P * f.b ** 2 + p * t.b ** 2) ** 0.5);
-    a = f.a, t = t.a, f = a >= 0 || t >= 0, a = f ? a < 0 ? t : t < 0 ? a : a * P + t * p : 0;
-    if (h) return "rgb" + (f ? "a(" : "(") + r + "," + g + "," + b + (f ? "," + m(a * 1000) / 1000 : "") + ")";
-    else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
-}
-
-function generateColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
-
-function getRandomIntInclusive(min, max) {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max);
-    return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
 }
 
 class LineSegment {
@@ -168,14 +82,14 @@ class OrbDude {
             this.vx = this.lockedVx;
             this.vy = this.lockedVy;
             this.angularVelocity = this.lockedAngleV;
-            const addVelocity = Math.rotate(0, 0, 0, -this.squishAmount * 10, this.angle);
+            const addVelocity = Mathutils.rotate(0, 0, 0, -this.squishAmount * 10, this.angle);
             this.vx += addVelocity[0];
             this.vy += addVelocity[1];
             this.squishAmount = 0;
         } if (pressedKeys[65]) {
-            this.angularVelocity = (this.angularVelocity * 9 - this.angularSpeed) / 10;
+            this.angularVelocity -= this.angularSpeed;
         } if (pressedKeys[68]) {
-            this.angularVelocity = (this.angularVelocity * 9 + this.angularSpeed) / 10;
+            this.angularVelocity += this.angularSpeed;
         }
     }
     draw() {
@@ -187,7 +101,7 @@ class OrbDude {
         ctx.beginPath();
         ctx.ellipse(this.x, this.y, this.radius + (this.squishAmount * 10), this.radius ** 2 / (this.radius + (this.squishAmount * 10)), this.angle * Math.PI / 180, 0, 2 * Math.PI);
         ctx.stroke();
-        const angleLine = Math.rotate(this.x, this.y, this.x + this.radius + (this.squishAmount * 10), this.y, this.angle);
+        const angleLine = Mathutils.rotate(this.x, this.y, this.x + this.radius + (this.squishAmount * 10), this.y, this.angle);
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(angleLine[0], angleLine[1]);
@@ -244,14 +158,9 @@ class OrbDude {
             const normal = { x: (this.x - closestPoint.x) / distToClosestPoint, y: (this.y - closestPoint.y) / distToClosestPoint };
 
             const dotProduct = this.vx * normal.x + this.vy * normal.y;
-            //if (this.isBottomHalfPointingTowardLine(line) && Math.abs(dotProduct) > gravity * 2) {
-            //    this.vx -= 2 * dotProduct * normal.x;
-            //    this.vy -= 2 * dotProduct * normal.y;
-            //} else {
             this.vx -= dotProduct * normal.x;
             this.vy -= dotProduct * normal.y;
-            //}
-
+            
             const tangent = { x: -normal.y, y: normal.x };
             const tangentialSpeed = this.vx * tangent.x + this.vy * tangent.y;
 
@@ -271,7 +180,7 @@ class OrbDude {
     }
 }
 
-let player = new OrbDude(canvas.width / 2, canvas.height - 300, 20, "steelblue", 0, 20, 50, 0.02);
+let player = new OrbDude(canvas.width / 2, canvas.height - 300, 20, "steelblue", 0, 20, 5, 0.02);
 lineSegments.push(new LineSegment(100, canvas.height - 100, 90, canvas.height - 600));
 lineSegments.push(new LineSegment(100, canvas.height - 100, canvas.width - 100, canvas.height - 100));
 lineSegments.push(new LineSegment(canvas.width - 100, canvas.height - 100, canvas.width - 50, canvas.height - 150));
@@ -301,32 +210,3 @@ function tick() {
 }
 
 window.requestAnimationFrame(tick);
-
-/*
---Memorial--
-
-simulateLineSegment(line) {
-    const slope = (line.y2 - line.y1) / (line.x2 - line.x1);
-    const lineNormal = -1 / slope;
-    const intersectX = (line.y1 - this.y + line.x1 / -slope + this.x * lineNormal) / (lineNormal - slope);
-    const intersectY = slope * (intersectX - line.x1) + line.y1;
-    const distance = Math.dist(this.x, this.y, intersectX, intersectY) - this.radius;
-    if (distance <= 0) {
-        const updatePos = Math.normalize(intersectX, intersectY, this.x, this.y, this.radius);
-        const updateVelocity = Math.reflect(this.vx, this.vy, 1, lineNormal);
-        this.vx = updateVelocity[0];
-        this.vy = updateVelocity[1];
-        this.x = intersectX + updatePos[0];
-        this.y = intersectY + updatePos[1];
-        const relativeVelocity = Math.project(this.vx, this.vy, 1, slope);
-        const relativeSpeed = Math.dist(relativeVelocity[0], relativeVelocity[1]);
-        const surfaceVelocity = 2 * this.angularVelocity * this.radius * Math.PI / 360;
-        const newSpeed = (relativeSpeed + surfaceVelocity) / 2;
-        const velocityChangeX = relativeVelocity[0] * newSpeed / relativeSpeed - relativeVelocity[0];
-        const velocityChangeY = relativeVelocity[1] * newSpeed / relativeSpeed - relativeVelocity[1];
-        this.vx += velocityChangeX;
-        this.vy += velocityChangeY;
-        this.angularVelocity = 360 * newSpeed / 2 / this.radius / Math.PI;
-    }
-}
-*/
