@@ -1,78 +1,34 @@
 import * as Mathutils from "./mathutils.js";
 
-export class LineCollider {
-    constructor(v0, v1, frictionCoefficient = 0, restitutionCoefficient = 1) {
-        this.v0 = v0;
-        this.v1 = v1;
+export class Properties {
+    constructor(frictionCoefficient = 0, restitutionCoefficient = 1) {
         this.frictionCoefficient = frictionCoefficient;
         this.restitutionCoefficient = restitutionCoefficient;
+    }
+}
+
+export class LineCollider {
+    constructor(v0, v1, properties = new Properties()) {
+        this.v0 = v0;
+        this.v1 = v1;
+        this.properties = properties;
+    }
+    getVector() {
+        return Mathutils.subtractVectors(this.v1, this.v0);
     }
 }
 
 export class CircleCollider {
-    constructor(center, radius, frictionCoefficient = 0, restitutionCoefficient = 1) {
+    constructor(center, radius, properties = new Properties()) {
         this.center = center;
         this.radius = radius;
-        this.frictionCoefficient = frictionCoefficient;
-        this.restitutionCoefficient = restitutionCoefficient;
+        this.properties = properties;
     }
-}
-
-function resolveCircleContact(circle, contact, collider, penetration = null, contactNormal = null) {
-    const center = circle.collider.center;
-    const centerToContact = center.copy().subtract(contact);
-    const distance = centerToContact.getLength();
-    let normal = contactNormal ?? centerToContact.normalize(1);
-
-    if (normal.getLength() === 0) {
-        normal = circle.velocity.getLength() === 0
-            ? new Mathutils.Vector(1, 0)
-            : circle.velocity.copy().multiply(-1).normalize(1);
-    }
-
-    const overlap = penetration ?? circle.collider.radius - distance;
-    if (overlap < 0) {
-        return false;
-    }
-
-    center.add(normal.copy().multiply(overlap));
-
-    const normalSpeed = circle.velocity.x * normal.x + circle.velocity.y * normal.y;
-    if (normalSpeed >= 0) {
-        return true;
-    }
-
-    const restitution = Math.min(
-        circle.collider.restitutionCoefficient,
-        collider.restitutionCoefficient
-    );
-    const normalImpulse = -(1 + restitution) * normalSpeed * circle.mass;
-    circle.velocity.add(normal.copy().multiply(-(1 + restitution) * normalSpeed));
-
-    if (circle.mass <= 0) {
-        return true;
-    }
-
-    const tangentVelocity = circle.velocity.copy().subtract(
-        normal.copy().multiply(circle.velocity.x * normal.x + circle.velocity.y * normal.y)
-    );
-    const tangentSpeed = tangentVelocity.getLength();
-    if (tangentSpeed === 0) {
-        return true;
-    }
-
-    const friction = Math.sqrt(
-        Math.max(0, circle.collider.frictionCoefficient) *
-        Math.max(0, collider.frictionCoefficient)
-    );
-    const frictionImpulse = Math.min(tangentSpeed * circle.mass, friction * normalImpulse);
-    circle.velocity.subtract(tangentVelocity.normalize(frictionImpulse / circle.mass));
-    return true;
 }
 
 export class Circle {
-    constructor(mass, center, radius, frictionCoefficient = 0, restitutionCoefficient = 1) {
-        this.collider = new CircleCollider(center, radius, frictionCoefficient, restitutionCoefficient);
+    constructor(mass, center, radius, properties = new Properties()) {
+        this.collider = new CircleCollider(center, radius, properties);
         this.mass = mass;
         this.velocity = new Mathutils.Vector(0, 0);
     }
@@ -82,42 +38,39 @@ export class Circle {
     }
 
     applyFriction(frictionCoefficient) {
-        const frictionForce = this.velocity.copy().multiply(-frictionCoefficient);
-        this.velocity.add(frictionForce);
+        this.velocity.add(Mathutils.multiplyVector(this.velocity, -frictionCoefficient));
     }
 
     update(deltaTime) {
-        this.collider.center.x += this.velocity.x * deltaTime;
-        this.collider.center.y += this.velocity.y * deltaTime;
+        this.collider.center.add(Mathutils.multiplyVector(this.velocity, deltaTime));
     }
 
     collideLineCollider(collider) {
-        const lineVector = collider.v1.copy().subtract(collider.v0);
+        const lineVector = collider.getVector();
         const lineLength = lineVector.getLength();
 
         if (lineLength === 0) {
-            return resolveCircleContact(this, collider.v0, collider);
+            return this.collideCircleCollider(new CircleCollider(collider.v0, 0, collider.properties));
         }
 
-        const offsetCenter = this.collider.center.copy().subtract(collider.v0);
-        const projectedCenter = offsetCenter.copy().project(lineVector);
-        const projection = lineVector.x != 0
-            ? projectedCenter.x / lineVector.x
-            : projectedCenter.y / lineVector.y;
-
+        const offsetCenter = Mathutils.subtractVectors(this.collider.center, collider.v0);
+        const projectedCenter = Mathutils.projectVector(offsetCenter, lineVector);
+        const projection = lineVector.x == 0 ?
+            projectedCenter.y / lineVector.y :
+            projectedCenter.x / lineVector.x;
         if (projection <= 0) {
-            return resolveCircleContact(this, collider.v0, collider);
+            return this.collideCircleCollider(new CircleCollider(collider.v0, 0, collider.properties));
         }
         if (projection >= 1) {
-            return resolveCircleContact(this, collider.v1, collider);
+            return this.collideCircleCollider(new CircleCollider(collider.v1, 0, collider.properties));
         }
 
-        const contact = collider.v0.copy().add(lineVector.multiply(projection));
-        return resolveCircleContact(this, contact, collider);
+        const contact = Mathutils.addVectors(collider.v0, Mathutils.multiplyVector(lineVector, projection));
+        return this.collideCircleCollider(new CircleCollider(contact, 0, collider.properties));
     }
 
-    collideCircleCollider(collider) {
-        const centerOffset = this.collider.center.copy().subtract(collider.center);
+    collideCircleCollider(collider) { // finish migrating
+        const centerOffset = Mathutils.subtractVectors(this.collider.center, collider.center);
         const centerDistance = centerOffset.getLength();
         const combinedRadius = this.collider.radius + collider.radius;
 
@@ -125,22 +78,45 @@ export class Circle {
             return false;
         }
 
-        const normal = centerOffset.normalize(1);
-        const contactNormal = normal.getLength() === 0
-            ? (this.velocity.getLength() === 0
-                ? new Mathutils.Vector(1, 0)
-                : this.velocity.copy().multiply(-1).normalize(1))
-            : normal;
-        const contact = collider.center.copy().add(
-            contactNormal.copy().multiply(collider.radius)
-        );
+        const normal = centerDistance == 0 ?
+            (this.velocity.getLength() == 0 ?
+                new Mathutils.Vector(1, 0) :
+                Mathutils.normalizeVector(Mathutils.multiplyVector(this.velocity, -1), 1)
+            ) :
+            Mathutils.normalizeVector(centerOffset, 1);
+        const penetration = combinedRadius - centerDistance;
+        this.collider.center.add(Mathutils.multiplyVector(normal, penetration));
 
-        return resolveCircleContact(
-            this,
-            contact,
-            collider,
-            combinedRadius - centerDistance,
-            contactNormal
+        const normalSpeed = Mathutils.dotProductVectors(this.velocity, normal);
+        if (normalSpeed >= 0) {
+            return true;
+        }
+
+        const restitution = Math.min(
+            this.collider.properties.restitutionCoefficient,
+            collider.properties.restitutionCoefficient
         );
+        const normalImpulse = -(1 + restitution) * normalSpeed * this.mass;
+        this.velocity.add(Mathutils.multiplyVector(normal, -(1 + restitution) * normalSpeed));
+
+        if (this.mass <= 0) {
+            return true;
+        }
+
+        const tangentVelocity = this.velocity.copy().subtract(
+            normal.copy().multiply(this.velocity.x * normal.x + this.velocity.y * normal.y)
+        );
+        const tangentSpeed = tangentVelocity.getLength();
+        if (tangentSpeed === 0) {
+            return true;
+        }
+
+        const friction = Math.sqrt(
+            Math.max(0, this.collider.properties.frictionCoefficient) *
+            Math.max(0, collider.properties.frictionCoefficient)
+        );
+        const frictionImpulse = Math.min(tangentSpeed * this.mass, friction * normalImpulse);
+        this.velocity.subtract(tangentVelocity.normalize(frictionImpulse / this.mass));
+        return true;
     }
 }

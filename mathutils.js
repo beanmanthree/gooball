@@ -67,3 +67,39 @@ export class Vector {
         return new Vector(projectedX, projectedY);
     }
 }
+
+export function subtractVectors(v0, v1) {
+    return v0.copy().subtract(v1);
+}
+
+export function addVectors(v0, v1) {
+    return v0.copy().add(v1);
+}
+
+export function multiplyVector(v, scalar) {
+    return v.copy().multiply(scalar);
+}
+
+export function divideVector(v, scalar) {
+    return v.copy().divide(scalar);
+}
+
+export function normalizeVector(v, r) {
+    return v.copy().normalize(r);
+}
+
+export function rotateVector(v, radians) {
+    return v.copy().rotate(radians);
+}
+
+export function reflectVector(v, normal) {
+    return v.copy().reflect(normal);
+}
+
+export function projectVector(v, onTo) {
+    return v.copy().project(onTo);
+}
+
+export function dotProductVectors(v0, v1) {
+    return v0.x * v1.x + v0.y * v1.y;
+}
