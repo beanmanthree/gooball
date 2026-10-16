@@ -1,44 +1,44 @@
+import * as Mathutils from "./mathutils.js";
 import * as Physics from "./physics.js";
 import * as Graphics from "./graphics.js";
 
-export const engine = { // HOLY SHIT IM GONNA IMPLEMENT std::hive!!!!
-    gravity: 9.81,
-    deltaTime: 1 / 60,
-    drag: 0.1,
+// HOLY SHIT IM GONNA IMPLEMENT std::hive!!!!
+const gravity = 1000;
+const deltaTime = 1 / 60;
+const drag = 0.00;
 
-    circles: [],
-    lineColliders: [],
+const circles = [];
+const lineColliders = [];
 
-    addCircle(mass, center, radius, ...properties) {
-        this.circles.push(new Physics.Circle(mass, center, radius, ...properties));
-    },
-    
-    addLineCollider(v0, v1, ...properties) {
-        this.lineColliders.push(new Physics.LineCollider(v0, v1, ...properties));
-    },
+export function addCircle(mass, center, radius, ...properties) {
+    circles.push(new Physics.Circle(mass, center, radius, ...properties));
+}
 
-    simulateCircles() {
-        for (const circle of this.circles) {
-            circle.applyFriction(this.drag);
-            circle.force(new Physics.Vector(0, this.gravity * circle.mass * this.deltaTime));
-            circle.update(this.deltaTime);
+export function addLineCollider(v0, v1, ...properties) {
+    lineColliders.push(new Physics.LineCollider(v0, v1, ...properties));
+}
 
-            for (const lineCollider of this.lineColliders) {
-                circle.collideLineCollider(lineCollider);
-            }
-        }
-    },
+export function simulateCircles() {
+    for (const circle of circles) {
+        circle.applyFriction(drag);
+        circle.force(new Mathutils.Vector(0, gravity * circle.mass * deltaTime));
+        circle.update(deltaTime);
 
-    update() {
-        this.simulateCircles();
-    },
-
-    drawDebug() {
-        for (const circle of this.circles) {
-            Graphics.strokeCircle(circle.collider.center, circle.collider.radius, "white", 2);
-        }
-        for (const lineCollider of this.lineColliders) {
-            Graphics.strokeLine(lineCollider.v0, lineCollider.v1, "white", 2);
+        for (const lineCollider of lineColliders) {
+            circle.collideLineCollider(lineCollider);
         }
     }
-};
+}
+
+export function update() {
+    simulateCircles();
+}
+
+export function drawDebug() {
+    for (const circle of circles) {
+        Graphics.strokeCircle(circle.collider.center, circle.collider.radius, "white");
+    }
+    for (const lineCollider of lineColliders) {
+        Graphics.strokeLine(lineCollider.v0, lineCollider.v1, "white");
+    }
+}

@@ -7,17 +7,19 @@ ctx.imageSmoothingEnabled = false;
 ctx.lineCap = "round";
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+export let cRect = canvas.getBoundingClientRect();
 
 addEventListener("resize", (evt) => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    cRect = canvas.getBoundingClientRect();
 });
 
 export function clearScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-export function strokeCircle(center, radius, color, width) {
+export function strokeCircle(center, radius, color, width = 1) {
     ctx.beginPath();
     ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
     ctx.strokeStyle = color;
@@ -32,10 +34,18 @@ export function fillCircle(center, radius, color) {
     ctx.fill();
 }
 
-export function strokeLine(v0, v1, color, width) {
+export function strokeLine(v0, v1, color, width = 1) {
     ctx.beginPath();
     ctx.moveTo(v0.x, v0.y);
     ctx.lineTo(v1.x, v1.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.stroke();
+}
+
+export function strokeRect(v0, v1, color, width = 1) {
+    ctx.beginPath();
+    ctx.rect(v0.x, v0.y, v1.x - v0.x, v1.y - v0.y);
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
     ctx.stroke();

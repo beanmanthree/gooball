@@ -34,7 +34,7 @@ export class Circle {
     }
 
     force(forceVector) {
-        this.velocity.add(forceVector);
+        this.velocity.add(forceVector.divide(this.mass));
     }
 
     applyFriction(frictionCoefficient) {
