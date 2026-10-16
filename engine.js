@@ -1,4 +1,5 @@
 import * as Physics from "./physics.js";
+import * as Graphics from "./graphics.js";
 
 export const engine = { // HOLY SHIT IM GONNA IMPLEMENT std::hive!!!!
     gravity: 9.81,
@@ -29,15 +30,15 @@ export const engine = { // HOLY SHIT IM GONNA IMPLEMENT std::hive!!!!
     },
 
     update() {
-        simulateCircles();
+        this.simulateCircles();
     },
 
     drawDebug() {
         for (const circle of this.circles) {
-            strokeCircle(circle.center, circle.radius, "white", 0);
+            Graphics.strokeCircle(circle.collider.center, circle.collider.radius, "white", 2);
         }
         for (const lineCollider of this.lineColliders) {
-            strokeLine(lineCollider.v0, lineCollider.v1, "white", 0);
+            Graphics.strokeLine(lineCollider.v0, lineCollider.v1, "white", 2);
         }
     }
 };

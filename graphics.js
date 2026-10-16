@@ -1,6 +1,6 @@
 import * as Mathutils from "./mathutils.js";
 
-const canvas = document.getElementById("canvas");
+const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 ctx.imageSmoothingEnabled = false;
