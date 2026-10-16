@@ -1,16 +1,4 @@
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-ctx.imageSmoothingEnabled = false;
-ctx.lineCap = "round";
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const cRect = canvas.getBoundingClientRect();
-
-addEventListener("resize", (evt) => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+import * as Engine from "./engine.js";
 
 const pressedKeys = {};
 window.onkeyup = function(e) {
@@ -22,12 +10,22 @@ window.onkeydown = function(e) {
 }
 
 function tick() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, 100, 0, Math.PI * 2);
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 5;
-    ctx.stroke();
+    clearScreen();
+    Engine.update();
+    Engine.drawDebug();
+
+    if (pressedKeys["KeyW"]) {
+        Engine.circles[0].force(new Engine.Vector(0, -100));
+    }
+    if (pressedKeys["KeyA"]) {
+        Engine.circles[0].force(new Engine.Vector(-100, 0));
+    }
+    if (pressedKeys["KeyS"]) {
+        Engine.circles[0].force(new Engine.Vector(0, 100));
+    }
+    if (pressedKeys["KeyD"]) {
+        Engine.circles[0].force(new Engine.Vector(100, 0));
+    }
     window.requestAnimationFrame(tick);
 }
 

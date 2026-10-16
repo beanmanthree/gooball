@@ -49,15 +49,16 @@ export class Circle {
         const lineVector = collider.getVector();
         const lineLength = lineVector.getLength();
 
-        if (lineLength === 0) {
+        if (lineLength <= Number.EPSILON) {
             return this.collideCircleCollider(new CircleCollider(collider.v0, 0, collider.properties));
         }
 
         const offsetCenter = Mathutils.subtractVectors(this.collider.center, collider.v0);
         const projectedCenter = Mathutils.projectVector(offsetCenter, lineVector);
-        const projection = lineVector.x == 0 ?
-            projectedCenter.y / lineVector.y :
-            projectedCenter.x / lineVector.x;
+        const projection = Math.abs(lineVector.x) > Number.EPSILON ?
+            projectedCenter.x / lineVector.x :
+            projectedCenter.y / lineVector.y;
+
         if (projection <= 0) {
             return this.collideCircleCollider(new CircleCollider(collider.v0, 0, collider.properties));
         }
@@ -69,7 +70,7 @@ export class Circle {
         return this.collideCircleCollider(new CircleCollider(contact, 0, collider.properties));
     }
 
-    collideCircleCollider(collider) { // finish migrating
+    collideCircleCollider(collider) {
         const centerOffset = Mathutils.subtractVectors(this.collider.center, collider.center);
         const centerDistance = centerOffset.getLength();
         const combinedRadius = this.collider.radius + collider.radius;
@@ -78,8 +79,8 @@ export class Circle {
             return false;
         }
 
-        const normal = centerDistance == 0 ?
-            (this.velocity.getLength() == 0 ?
+        const normal = centerDistance <= Number.EPSILON ?
+            (this.velocity.getLength() <= Number.EPSILON ?
                 new Mathutils.Vector(1, 0) :
                 Mathutils.normalizeVector(Mathutils.multiplyVector(this.velocity, -1), 1)
             ) :
@@ -92,22 +93,13 @@ export class Circle {
             return true;
         }
 
-        const restitution = Math.min(
-            this.collider.properties.restitutionCoefficient,
-            collider.properties.restitutionCoefficient
-        );
+        const restitution = Math.min(this.collider.properties.restitutionCoefficient, collider.properties.restitutionCoefficient);
         const normalImpulse = -(1 + restitution) * normalSpeed * this.mass;
         this.velocity.add(Mathutils.multiplyVector(normal, -(1 + restitution) * normalSpeed));
 
-        if (this.mass <= 0) {
-            return true;
-        }
-
-        const tangentVelocity = this.velocity.copy().subtract(
-            normal.copy().multiply(this.velocity.x * normal.x + this.velocity.y * normal.y)
-        );
+        const tangentVelocity = Mathutils.subtractVectors(this.velocity, Mathutils.multiplyVector(normal, normalSpeed));
         const tangentSpeed = tangentVelocity.getLength();
-        if (tangentSpeed === 0) {
+        if (tangentSpeed <= Number.EPSILON) {
             return true;
         }
 
@@ -116,7 +108,7 @@ export class Circle {
             Math.max(0, collider.properties.frictionCoefficient)
         );
         const frictionImpulse = Math.min(tangentSpeed * this.mass, friction * normalImpulse);
-        this.velocity.subtract(tangentVelocity.normalize(frictionImpulse / this.mass));
+        this.velocity.subtract(Mathutils.normalizeVector(tangentVelocity, frictionImpulse / this.mass));
         return true;
     }
 }
