@@ -42,6 +42,7 @@ export class Vector {
         const ratio = r / length;
         this.x *= ratio;
         this.y *= ratio;
+        return this
     }
 
     rotate(radians) {
@@ -49,12 +50,14 @@ export class Vector {
         const sinValue = Math.sin(radians);
         this.x = (cosValue * this.x) - (sinValue * this.y);
         this.y = (sinValue * this.x) + (cosValue * this.y);
+        return this
     }
 
     reflect(normal) {
         const dotProduct = this.x * normal.x + this.y * normal.y;
         this.x = this.x - 2 * dotProduct * normal.x;
         this.y = this.y - 2 * dotProduct * normal.y;
+        return this
     }
 
     project(onTo) {
@@ -63,6 +66,7 @@ export class Vector {
         const scalar = dotProduct / magnitudeSquared;
         this.x = scalar * onTo.x;
         this.y = scalar * onTo.y;
+        return this
     }
 }
 
