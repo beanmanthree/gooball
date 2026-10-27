@@ -4,7 +4,6 @@ import { ctx, canvas } from './graphics.js';
 canvas.width = 800;
 canvas.height = 600;
 
-/** @type {Object<string, boolean>} */
 const keys = {};
 
 window.addEventListener('keydown', (e) => {
@@ -20,9 +19,6 @@ engine.init();
 
 let lastTime = performance.now();
 
-/**
- * @param {number} currentTime
- */
 function gameLoop(currentTime) {
   const dt = (currentTime - lastTime) / 1000;
   lastTime = currentTime;

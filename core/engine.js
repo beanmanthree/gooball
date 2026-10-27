@@ -5,10 +5,9 @@ import { strokeLine } from '../graphics.js';
 
 export class Engine {
   constructor() {
-    /** @type {PhysicsEngine} */
-    this.physics = new PhysicsEngine();
     
-    /** @type {Player|null} */
+    this.physics = new PhysicsEngine();
+  
     this.player = null;
   }
 
@@ -22,10 +21,6 @@ export class Engine {
     this.walls = [];
   }
 
-  /**
-   * @param {number} dt
-   * @param {Object<string, boolean>} inputKeys
-   */
   update(dt, inputKeys) {
     if (this.player) {
       this.player.handleInput(inputKeys);

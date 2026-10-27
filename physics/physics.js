@@ -116,12 +116,8 @@ export class Circle {
 }
 
 export class PhysicsEngine {
-  /**
-   * @param {<LineCollider>} lineColliders
-   */
   constructor(gravity = GRAVITY, lineColliders = []) {
     this.gravity = gravity;
-    /** @type {Array<import('./circle.js').Circle>} */
     this.bodies = [];
     this.lineColliders = lineColliders;
   }

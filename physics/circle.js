@@ -1,9 +1,4 @@
 export class Circle {
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {number} radius
-   */
   constructor(x, y, radius) {
     this.x = x;
     this.y = y;
@@ -12,10 +7,6 @@ export class Circle {
     this.vy = 0;
   }
 
-  /**
-   * @param {number} fx
-   * @param {number} fy
-   */
   applyForce(fx, fy) {
     this.vx += fx;
     this.vy += fy;
