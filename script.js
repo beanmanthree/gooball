@@ -1,27 +1,56 @@
-import * as Engine from "./engine.js";
-import * as Mathutils from "./mathutils.js";
-import * as Graphics from "./graphics.js";
+import { Engine } from './core/engine.js';
 
-Engine.addCircle(1, new Mathutils.Vector(window.innerWidth / 2, window.innerHeight / 2), 20);
-Engine.addLineCollider(new Mathutils.Vector(Graphics.cRect.left, Graphics.cRect.bottom), new Mathutils.Vector(Graphics.cRect.right, Graphics.cRect.bottom));
-Engine.addLineCollider(new Mathutils.Vector(Graphics.cRect.left, Graphics.cRect.top), new Mathutils.Vector(Graphics.cRect.right, Graphics.cRect.top));
-Engine.addLineCollider(new Mathutils.Vector(Graphics.cRect.left, Graphics.cRect.top), new Mathutils.Vector(Graphics.cRect.left, Graphics.cRect.bottom));
-Engine.addLineCollider(new Mathutils.Vector(Graphics.cRect.right, Graphics.cRect.top), new Mathutils.Vector(Graphics.cRect.right, Graphics.cRect.bottom));
+const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('gameCanvas'));
+const ctx = canvas.getContext('2d');
 
-const pressedKeys = {};
-window.onkeyup = function(e) {
-    pressedKeys[e.code] = false;
+canvas.width = 800;
+canvas.height = 600;
+
+/** @type {Object<string, boolean>} */
+const keys = {};
+
+window.addEventListener('keydown', (e) => {
+  keys[e.code] = true;
+});
+
+window.addEventListener('keyup', (e) => {
+  keys[e.code] = false;
+});
+
+const engine = new Engine();
+engine.init();
+
+let lastTime = performance.now();
+
+/**
+ * @param {number} currentTime
+ */
+function gameLoop(currentTime) {
+  const dt = (currentTime - lastTime) / 1000;
+  lastTime = currentTime;
+
+
+  const safeDt = Math.min(dt, 0.1);
+  engine.update(safeDt, keys);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = '#1e1e24';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (engine.player) {
+    const body = engine.player.body;
+    ctx.beginPath();
+    ctx.arc(body.x, body.y, body.radius, 0, Math.PI * 2);
+    ctx.fillStyle = '#4ea8de';
+    ctx.fill();
+    ctx.strokeStyle = '#5390d9';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.closePath();
+  }
+
+  requestAnimationFrame(gameLoop);
 }
 
-window.onkeydown = function(e) {
-    pressedKeys[e.code] = true;
-}
-
-function tick() {
-    Graphics.clearScreen();
-    Engine.update();
-    Engine.drawDebug();
-    window.requestAnimationFrame(tick);
-}
-
-window.requestAnimationFrame(tick);
+requestAnimationFrame(gameLoop);
