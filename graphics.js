@@ -1,7 +1,7 @@
 import * as Mathutils from "./mathutils.js";
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+export const canvas = document.getElementById("gameCanvas");
+export const ctx = canvas.getContext("2d");
 
 ctx.imageSmoothingEnabled = false;
 ctx.lineCap = "round";

@@ -126,13 +126,13 @@ export class PhysicsEngine {
     this.bodies.push(body);
   }
 
-  addLineCollider (p0, p1, properties) {
-    this.lineColliders.push(new LineCollider(p0, p1, new properties(...properties)));
+  addLineCollider(p0, p1, properties = [0, 0]) {
+    this.lineColliders.push(new LineCollider(p0, p1, new Properties(...properties)));
   }
 
   update(dt) {
     for (const body of this.bodies) {
-      body.vy += this.gravity * dt;
+      body.velocity.y += this.gravity * dt;
 
       body.update(dt);
       for (const wall of this.lineColliders) {

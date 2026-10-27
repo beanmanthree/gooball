@@ -1,20 +1,31 @@
+import { Vector } from '../mathutils.js';
+
 export class Player {
-  constructor(circle) {
-    this.body = circle;
-    this.speed = 15;
+  constructor(body) {
+    this.body = body;
+    this.speed = 1500;
+    this.braking = 6000;
     this.score = 0;
   }
 
-  handleInput(keys) {
+  handleInput(keys, dt) {
+    let horizontalForce = 0;
     if (keys['ArrowLeft'] || keys['KeyA']) {
-      this.body.applyForce(-this.speed, 0);
+      horizontalForce -= this.speed;
     }
     if (keys['ArrowRight'] || keys['KeyD']) {
-      this.body.applyForce(this.speed, 0);
+      horizontalForce += this.speed;
+    }
+    if (horizontalForce !== 0) {
+      this.body.force(new Vector(horizontalForce * this.body.mass * dt, 0));
+    } else {
+      const velocityX = this.body.velocity.x;
+      const velocityChange = this.braking * dt;
+      this.body.velocity.x = Math.abs(velocityX) <= velocityChange
+        ? 0
+        : velocityX - Math.sign(velocityX) * velocityChange;
     }
   }
 
-  update(dt) {
-    
-  }
+  update(dt) {}
 }

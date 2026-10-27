@@ -1,12 +1,13 @@
 import { Engine } from './core/engine.js';
 import { ctx, canvas } from './graphics.js';
-
-canvas.width = 800;
-canvas.height = 600;
+import { Vector } from './mathutils.js';
 
 const keys = {};
 
 window.addEventListener('keydown', (e) => {
+  if (e.code.startsWith('Arrow')) {
+    e.preventDefault();
+  }
   keys[e.code] = true;
 });
 
@@ -16,6 +17,7 @@ window.addEventListener('keyup', (e) => {
 
 const engine = new Engine();
 engine.init();
+engine.addWall(new Vector(50, 200), new Vector(600, 200));
 
 let lastTime = performance.now();
 
@@ -32,10 +34,18 @@ function gameLoop(currentTime) {
   ctx.fillStyle = '#1e1e24';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  engine.render();
+
   if (engine.player) {
     const body = engine.player.body;
     ctx.beginPath();
-    ctx.arc(body.x, body.y, body.radius, 0, Math.PI * 2);
+    ctx.arc(
+      body.collider.center.x,
+      body.collider.center.y,
+      body.collider.radius,
+      0,
+      Math.PI * 2
+    );
     ctx.fillStyle = '#4ea8de';
     ctx.fill();
     ctx.strokeStyle = '#5390d9';
