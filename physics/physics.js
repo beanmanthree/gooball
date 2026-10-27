@@ -1,4 +1,6 @@
-import * as Mathutils from "./mathutils.js";
+import * as Mathutils from "../mathutils.js";
+
+const GRAVITY = 900;
 
 export class Properties {
     constructor(frictionCoefficient = 0, restitutionCoefficient = 1) {
@@ -111,4 +113,35 @@ export class Circle {
         this.velocity.subtract(Mathutils.normalizeVector(tangentVelocity, frictionImpulse / this.mass));
         return true;
     }
+}
+
+export class PhysicsEngine {
+  /**
+   * @param {<LineCollider>} lineColliders
+   */
+  constructor(gravity = GRAVITY, lineColliders = []) {
+    this.gravity = gravity;
+    /** @type {Array<import('./circle.js').Circle>} */
+    this.bodies = [];
+    this.lineColliders = lineColliders;
+  }
+
+  addBody(body) {
+    this.bodies.push(body);
+  }
+
+  addLineCollider (p0, p1, properties) {
+    this.lineColliders.push(new LineCollider(p0, p1, new properties(...properties)));
+  }
+
+  update(dt) {
+    for (const body of this.bodies) {
+      body.vy += this.gravity * dt;
+
+      body.update(dt);
+      for (const wall of this.lineColliders) {
+        body.collideLineCollider(wall);
+      }
+    }
+  }
 }

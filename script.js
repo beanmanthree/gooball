@@ -1,7 +1,5 @@
 import { Engine } from './core/engine.js';
-
-const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('gameCanvas'));
-const ctx = canvas.getContext('2d');
+import { ctx, canvas } from './graphics.js';
 
 canvas.width = 800;
 canvas.height = 600;
