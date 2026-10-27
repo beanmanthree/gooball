@@ -38,33 +38,31 @@ export class Vector {
 
     normalize(r) {
         const length = this.getLength();
-        if (!length) return new Vector(0, 0);
+        if (!length) return;
         const ratio = r / length;
-        return new Vector(this.x * ratio, this.y * ratio);
+        this.x *= ratio;
+        this.y *= ratio;
     }
 
     rotate(radians) {
         const cosValue = Math.cos(radians);
         const sinValue = Math.sin(radians);
-        const rotatedX = (cosValue * this.x) - (sinValue * this.y);
-        const rotatedY = (sinValue * this.x) + (cosValue * this.y);
-        return new Vector(rotatedX, rotatedY);
+        this.x = (cosValue * this.x) - (sinValue * this.y);
+        this.y = (sinValue * this.x) + (cosValue * this.y);
     }
 
     reflect(normal) {
         const dotProduct = this.x * normal.x + this.y * normal.y;
-        const reflectedX = this.x - 2 * dotProduct * normal.x;
-        const reflectedY = this.y - 2 * dotProduct * normal.y;
-        return new Vector(reflectedX, reflectedY);
+        this.x = this.x - 2 * dotProduct * normal.x;
+        this.y = this.y - 2 * dotProduct * normal.y;
     }
 
     project(onTo) {
         const dotProduct = this.x * onTo.x + this.y * onTo.y;
         const magnitudeSquared = onTo.x * onTo.x + onTo.y * onTo.y;
         const scalar = dotProduct / magnitudeSquared;
-        const projectedX = scalar * onTo.x;
-        const projectedY = scalar * onTo.y;
-        return new Vector(projectedX, projectedY);
+        this.x = scalar * onTo.x;
+        this.y = scalar * onTo.y;
     }
 }
 
