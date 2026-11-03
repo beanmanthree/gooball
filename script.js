@@ -17,7 +17,8 @@ window.addEventListener('keyup', (e) => {
 
 const engine = new Engine();
 engine.init();
-engine.addWall(new Vector(50, 200), new Vector(600, 200));
+engine.addWall(new Vector(50, 200), new Vector(10000, 200));
+engine.addWall(new Vector(500, 200), new Vector(900, 0));
 
 let lastTime = performance.now();
 
@@ -33,6 +34,9 @@ function gameLoop(currentTime) {
   
   ctx.fillStyle = '#1e1e24';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  ctx.translate(-Math.round(engine.camera.x), -Math.round(engine.camera.y));
 
   engine.render();
 
@@ -53,6 +57,8 @@ function gameLoop(currentTime) {
     ctx.stroke();
     ctx.closePath();
   }
+
+  ctx.restore();
 
   requestAnimationFrame(gameLoop);
 }

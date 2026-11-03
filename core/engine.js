@@ -1,6 +1,6 @@
 import { Player } from '../entities/player.js';
 import { Circle, PhysicsEngine } from '../physics/physics.js';
-import { strokeLine } from '../graphics.js';
+import { strokeLine, canvas, Camera } from '../graphics.js';
 import { Vector } from '../mathutils.js';
 
 export class Engine {
@@ -14,12 +14,14 @@ export class Engine {
     const playerBody = new Circle(100, new Vector(100, 100), 20);
     this.physics.addBody(playerBody);
     this.player = new Player(playerBody);
+    this.camera = new Camera(canvas.width, canvas.height);
   }
 
   update(dt, inputKeys) {
     if (this.player) {
       this.player.handleInput(inputKeys, dt);
       this.player.update(dt);
+      this.camera.follow(this.player, 2000, 2000);
     }
 
     this.physics.update(dt);

@@ -57,3 +57,23 @@ export function fillRect(v0, v1, color) {
     ctx.fillStyle = color;
     ctx.fill();
 }
+
+export class Camera {
+  constructor(width, height) {
+    this.x = 0;
+    this.y = 0;
+    this.width = width;
+    this.height = height;
+  }
+
+  follow(target, mapWidth, mapHeight) {
+    const targetX = target.x - this.width / 2;
+    const targetY = target.y - this.height / 2;
+
+    this.x += (targetX - this.x) * 0.1;
+    this.y += (targetY - this.y) * 0.1;
+
+    this.x = Math.max(0, Math.min(this.x, mapWidth - this.width));
+    this.y = Math.max(0, Math.min(this.y, mapHeight - this.height));
+  }
+}
