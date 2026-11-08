@@ -7,3 +7,4 @@
 # rULe 6: 100 width, use 1-line if statements whenever possible, as long as the line fits under 100 characters.
 # rULE 7: all lines under 100 characters. (rule 6 exception to this rule)
 # Rule 8: Consistent line spacing (ignore ts one bro ts is pedantic)
+# Ritcwick Dey Live Server lol
