@@ -116,28 +116,28 @@ export class Circle {
 }
 
 export class PhysicsEngine {
-  constructor(gravity = GRAVITY, lineColliders = []) {
-    this.gravity = gravity;
-    this.bodies = [];
-    this.lineColliders = lineColliders;
-  }
-
-  addBody(body) {
-    this.bodies.push(body);
-  }
-
-  addLineCollider(p0, p1, properties = [0, 0]) {
-    this.lineColliders.push(new LineCollider(p0, p1, new Properties(...properties)));
-  }
-
-  update(dt) {
-    for (const body of this.bodies) {
-      body.velocity.y += this.gravity * dt;
-
-      body.update(dt);
-      for (const wall of this.lineColliders) {
-        body.collideLineCollider(wall);
-      }
+    constructor(gravity = GRAVITY, lineColliders = []) {
+        this.gravity = gravity;
+        this.bodies = [];
+        this.lineColliders = lineColliders;
     }
-  }
+
+    addBody(body) {
+        this.bodies.push(body);
+    }
+
+    addLineCollider(p0, p1, properties = [0, 0]) {
+        this.lineColliders.push(new LineCollider(p0, p1, new Properties(...properties)));
+    }
+
+    update(dt) {
+        for (const body of this.bodies) {
+            body.velocity.y += this.gravity * dt;
+
+            body.update(dt);
+            for (const wall of this.lineColliders) {
+            body.collideLineCollider(wall);
+            }
+        }
+    }
 }

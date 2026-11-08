@@ -12,7 +12,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-  keys[e.code] = false;
+    keys[e.code] = false;
 });
 
 const engine = new Engine();
@@ -23,44 +23,44 @@ engine.addWall(new Vector(500, 200), new Vector(900, 0));
 let lastTime = performance.now();
 
 function gameLoop(currentTime) {
-  const dt = (currentTime - lastTime) / 1000;
-  lastTime = currentTime;
+    const dt = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
 
 
-  const safeDt = Math.min(dt, 0.1);
-  engine.update(safeDt, keys);
+    const safeDt = Math.min(dt, 0.1);
+    engine.update(safeDt, keys);
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.fillStyle = '#1e1e24';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.save();
-  ctx.translate(-Math.round(engine.camera.x), -Math.round(engine.camera.y));
+    ctx.fillStyle = '#1e1e24';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  engine.render();
+    ctx.save();
+    ctx.translate(-Math.round(engine.camera.x), -Math.round(engine.camera.y));
 
-  if (engine.player) {
-    const body = engine.player.body;
-    ctx.beginPath();
-    ctx.arc(
-      body.collider.center.x,
-      body.collider.center.y,
-      body.collider.radius,
-      0,
-      Math.PI * 2
-    );
-    ctx.fillStyle = '#4ea8de';
-    ctx.fill();
-    ctx.strokeStyle = '#5390d9';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.closePath();
-  }
+    engine.render();
 
-  ctx.restore();
+    if (engine.player) {
+        const body = engine.player.body;
+        ctx.beginPath();
+        ctx.arc(
+            body.collider.center.x,
+            body.collider.center.y,
+            body.collider.radius,
+            0,
+            Math.PI * 2
+        );
+        ctx.fillStyle = '#4ea8de';
+        ctx.fill();
+        ctx.strokeStyle = '#5390d9';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.closePath();
+    }
 
-  requestAnimationFrame(gameLoop);
+    ctx.restore();
+
+    requestAnimationFrame(gameLoop);
 }
 
 requestAnimationFrame(gameLoop);
