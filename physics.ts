@@ -6,74 +6,97 @@ export enum ShapeType {
     LINE = 2
 }
 
-export enum BodyType {
-    STATIC = 0,
-    DYNAMIC = 1,
-    KINEMATIC = 2
+export interface MassData {
+    mass: number;
+    inertia: number;
+    center: Vector2;
 }
 
 abstract class Shape {
-    restitution!: number;
-    density!: number;
-    type!: ShapeType;
-    friction!: number;
+    type: ShapeType;
+    density: number;
+    friction: number;
+    restitution: number;
 
-    constructor(restitution: number, density: number, type: ShapeType, friction: number) {
-        this.restitution = restitution;
-        this.density = density
+    constructor(type: ShapeType, desnity: number = 1, friction: number = 0.5, restitution: number = 0.5) {
         this.type = type;
+        this.density = desnity;
         this.friction = friction;
+        this.restitution = restitution;
+    }
+
+    copy(other: Shape) : Shape {
+        this.type = other.type;
+        this.density = other.density;
+        this.friction = other.friction;
+        this.restitution = other.restitution;
+        return this;
     }
 
     abstract clone(): Shape;
 
-    abstract computeAABB(outAABB: AABB, transform: Transform): void;
+    abstract computeAABB(transform: Transform, outAABB: AABB): void;
 
-    abstract computeMass(): number;
-
+    abstract computeMassData(outMassData: MassData): void;
 }
 
-class CircleShape extends Shape {
-    center!: Vector2;
-    radius!: number;
+export class CircleShape extends Shape {
+    radius: number;
 
-    constructor(restitution: number, density: number, type: ShapeType, friction: number, center: Vector2, radius: number) {
-        super(restitution, density, type, friction)
-        this.center = center
-        this.radius = radius
+    constructor(radius: number) {
+        super(ShapeType.CIRCLE);
+        this.radius = radius;
     }
 
-    clone () {
-        return new CircleShape(this.restitution, this.density, this.type, this.friction, this.center, this.radius);
+    clone() : CircleShape {
+        const clone = new CircleShape(this.radius);
+        clone.copy(this);
+        return clone;
     }
 
-    computeAABB(outAABB: AABB, transform: Transform): void {
-        
+    computeAABB(transform: Transform, outAABB: AABB): void {
+        outAABB.min.set(transform.position.x - this.radius, transform.position.y - this.radius);
+        outAABB.max.set(transform.position.x + this.radius, transform.position.y + this.radius);
     }
 
-    computeMass(): number {
-        
+    computeMassData(outMassData: MassData): void {
+        const area = Math.PI * this.radius * this.radius;
+        outMassData.mass = area * this.density;
+        outMassData.inertia = outMassData.mass * this.radius * this.radius / 2;
+        outMassData.center.set(0, 0);
     }
 }
 
 class PolygonShape extends Shape {
-    vertices!: Vector2[];
+    vertices: Vector2[] = [];
+    normals: Vector2[] = [];
 
-    constructor(restitution: number, density: number, type: ShapeType, friction: number, ...vertices: Vector2[]) {
-        super(restitution, density, type, friction)
-        this.vertices = vertices
+    constructor() {
+        super(ShapeType.POLYGON);
     }
 
-    clone () {
-        return new PolygonShape(this.restitution, this.density, this.type, this.friction, ...this.vertices);
+    setVertices(vertices: Vector2[]): void {
+        const count = vertices.length;
+        this.vertices = vertices.map(v => v.clone());
+        this.normals = new Array(count);
+        for (let i = 0; i < count; i++) {
+            const v0 = this.vertices[i];
+            const v1 = this.vertices[(i + 1) % count];
+            const edge = v1.clone().subtract(v0);
+            const normal = edge.perpendicularCCW().normalize();
+            this.normals[i] = normal;
+        }
     }
 
-    computeAABB(outAABB: AABB, transform: Transform): void {
-        
-    }
-
-    computeMass(): number {
-        
+    setBox(width: number, height: number): void {
+        const hx = width / 2;
+        const hy = height / 2;
+        this.setVertices([
+            new Vector2(-hx, -hy),
+            new Vector2(hx, -hy),
+            new Vector2(hx, hy),
+            new Vector2(-hx, hy)
+        ]);
     }
 }
 
@@ -86,21 +109,15 @@ class LineShape extends Shape {
         this.p0 = p0;
         this.p1 = p1;
     }
+}
 
-    clone () {
-        return new PolygonShape(this.restitution, this.density, this.type, this.friction, this.p0, this.p1)
-    }
-    
-    computeAABB(outAABB: AABB, transform: Transform): void {
-        
-    }
-
-    computeMass(): number {
-
-    }
+export enum BodyType {
+    STATIC = 0,
+    DYNAMIC = 1,
+    KINEMATIC = 2
 }
 
 class RigidBody {
-    type!: BodyType;
-    shape!: Shape;
+    type: BodyType;
+    shape: Shape;
 }

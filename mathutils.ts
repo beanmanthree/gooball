@@ -52,9 +52,9 @@ export class Vector2 {
         return this;
     }
 
-    normalize(r: number): this | undefined {
+    normalize(r: number = 1): this {
         const length = this.length();
-        if (!length) return;
+        if (!length) return this.set(0, 1);
         const ratio = r / length;
         this.x *= ratio;
         this.y *= ratio;
@@ -69,7 +69,11 @@ export class Vector2 {
         return this.x * other.y - this.y * other.x;
     }
 
-    perpendicular(): Vector2 {
+    perpendicularCW(): Vector2 {
+        return new Vector2(this.y, -this.x);
+    }
+
+    perpendicularCCW(): Vector2 {
         return new Vector2(-this.y, this.x);
     }
 
