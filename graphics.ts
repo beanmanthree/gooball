@@ -5,15 +5,6 @@ export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 ctx.imageSmoothingEnabled = false;
 ctx.lineCap = "round";
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-export let cRect: DOMRect = canvas.getBoundingClientRect();
-
-addEventListener("resize", (evt: UIEvent) => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    cRect = canvas.getBoundingClientRect();
-});
 
 export function clearScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

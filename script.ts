@@ -1,15 +1,5 @@
 import { ctx, canvas } from './graphics.js';
-
-const keys: Record<string, boolean> = {};
-
-window.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.code.startsWith('Arrow')) e.preventDefault();
-    keys[e.code] = true;
-});
-
-window.addEventListener('keyup', (e: KeyboardEvent) => {
-    keys[e.code] = false;
-});
+import './input.js';
 
 function tick(currentTime: number): void {
     ctx.fillStyle = '#333';
