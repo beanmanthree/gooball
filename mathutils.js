@@ -1,26 +1,40 @@
-export class Vector {
+export class Vector2 {
     constructor(x = 0, y = 0) {
         this.x = x;
         this.y = y;
     }
     
-    copy() {
-        return new Vector(this.x, this.y);
+    set(x, y) {
+        this.x = x;
+        this.y = y;
+        return this;
     }
 
-    getLength() {
+    set(other) {
+        return set(other.x, other.y);
+    }
+
+    clone() {
+        return new Vector2(this.x, this.y);
+    }
+
+    length() {
         return Math.hypot(this.x, this.y);
     }
 
-    subtract(other) {
-        this.x -= other.x;
-        this.y -= other.y;
-        return this;
+    lengthSquared() {
+        return this.x * this.x + this.y * this.y;
     }
 
     add(other) {
         this.x += other.x;
         this.y += other.y;
+        return this;
+    }
+
+    subtract(other) {
+        this.x -= other.x;
+        this.y -= other.y;
         return this;
     }
 
@@ -37,12 +51,24 @@ export class Vector {
     }
 
     normalize(r) {
-        const length = this.getLength();
+        const length = this.length();
         if (!length) return;
         const ratio = r / length;
         this.x *= ratio;
         this.y *= ratio;
         return this
+    }
+
+    dot(other) {
+        return this.x * other.x + this.y * other.y;
+    }
+
+    cross(other) {
+        return this.x * other.y - this.y * other.x;
+    }
+
+    perpendicular() {
+        return new Vector(-this.y, this.x);
     }
 
     rotate(radians) {
@@ -70,38 +96,73 @@ export class Vector {
     }
 }
 
-export function subtractVectors(v0, v1) {
-    return v0.copy().subtract(v1);
+export class Transform {
+    constructor(position = new Vector2(), rotation = 0) {
+        this.set(position, rotation);
+    }
+    
+    set(position, rotation) {
+        this.position = position;
+        this.rotation = rotation;
+        this.updateTrig();
+        return this;
+    }
+
+    clone() {
+        return new Transform(this.position.clone(), this.rotation);
+    }
+
+    updateTrig() {
+        this.cos = Math.cos(this.rotation);
+        this.sin = Math.sin(this.rotation);
+    }
 }
 
-export function addVectors(v0, v1) {
-    return v0.copy().add(v1);
-}
+export class AABB {
+    constructor(min = new Vector2(), max = new Vector2()) {
+        this.min = min;
+        this.max = max;
+    }
 
-export function multiplyVector(v, scalar) {
-    return v.copy().multiply(scalar);
-}
+    set(min, max) {
+        this.min.set(min);
+        this.max.set(max);
+        return this;
+    }
 
-export function divideVector(v, scalar) {
-    return v.copy().divide(scalar);
-}
+    clone() {
+        return new AABB(this.min.clone(), this.max.clone());
+    }
 
-export function normalizeVector(v, r) {
-    return v.copy().normalize(r);
-}
+    contains(point) {
+        return point.x >= this.min.x && point.x <= this.max.x &&
+            point.y >= this.min.y && point.y <= this.max.y;
+    }
 
-export function rotateVector(v, radians) {
-    return v.copy().rotate(radians);
-}
+    intersects(other) {
+        return this.min.x <= other.max.x && this.max.x >= other.min.x &&
+            this.min.y <= other.max.y && this.max.y >= other.min.y;
+    }
 
-export function reflectVector(v, normal) {
-    return v.copy().reflect(normal);
-}
+    expand(margin) {
+        this.min.x -= margin.x;
+        this.min.y -= margin.y;
+        this.max.x += margin.x;
+        this.max.y += margin.y;
+        return this;
+    }
 
-export function projectVector(v, onTo) {
-    return v.copy().project(onTo);
-}
+    combine(other) {
+        this.min.x = Math.min(this.min.x, other.min.x);
+        this.min.y = Math.min(this.min.y, other.min.y);
+        this.max.x = Math.max(this.max.x, other.max.x);
+        this.max.y = Math.max(this.max.y, other.max.y);
+        return this;
+    }
 
-export function dotProductVectors(v0, v1) {
-    return v0.x * v1.x + v0.y * v1.y;
+    perimeter() {
+        const width = this.max.x - this.min.x;
+        const height = this.max.y - this.min.y;
+        return 2 * (width + height);
+    }
 }
