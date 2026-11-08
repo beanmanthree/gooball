@@ -1,14 +1,14 @@
-import { Engine } from './core/engine.js';
+import { Engine } from './engine.js';
 import { ctx, canvas } from './graphics.js';
 import { Vector } from './mathutils.js';
 
 const keys = {};
 
 window.addEventListener('keydown', (e) => {
-  if (e.code.startsWith('Arrow')) {
-    e.preventDefault();
-  }
-  keys[e.code] = true;
+    if (e.code.startsWith('Arrow')) {
+      e.preventDefault();
+    }
+    keys[e.code] = true;
 });
 
 window.addEventListener('keyup', (e) => {

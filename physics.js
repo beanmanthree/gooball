@@ -1,4 +1,4 @@
-import * as Mathutils from "../mathutils.js";
+import * as Mathutils from "./mathutils.js";
 
 const GRAVITY = 900;
 

@@ -1,7 +1,7 @@
-import { Player } from '../entities/player.js';
-import { Circle, PhysicsEngine } from '../physics/physics.js';
-import { strokeLine, canvas, Camera } from '../graphics.js';
-import { Vector } from '../mathutils.js';
+import { Player } from './player.js';
+import { Circle, PhysicsEngine } from './physics.js';
+import { strokeLine, canvas, Camera } from './graphics.js';
+import { Vector } from './mathutils.js';
 
 export class Engine {
   constructor() {

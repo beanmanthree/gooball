@@ -1,25 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Gooball</title>
-  <style>
-    body {
-      margin: 0;
-      background: #0f0f12;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    canvas {
-      border: 2px solid #333;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-    }
-  </style>
-</head>
-<body>
-  <canvas id="gameCanvas"></canvas>
-  <script type="module" src="./script.js"></script>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Gooball</title>
+        <link rel="icon" type="image/png" href="./src/gooball.webp"/>
+        <link href="./style.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <canvas id="game"></canvas>
+        <script type="module" src="./script.js"></script>
+    </body>
 </html>
