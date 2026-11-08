@@ -46,6 +46,14 @@ class CircleShape extends Shape {
     clone () {
         return new CircleShape(this.restitution, this.density, this.type, this.friction, this.center, this.radius);
     }
+
+    computeAABB(outAABB: AABB, transform: Transform): void {
+        
+    }
+
+    computeMass(): number {
+        
+    }
 }
 
 class PolygonShape extends Shape {
@@ -58,6 +66,14 @@ class PolygonShape extends Shape {
 
     clone () {
         return new PolygonShape(this.restitution, this.density, this.type, this.friction, ...this.vertices);
+    }
+
+    computeAABB(outAABB: AABB, transform: Transform): void {
+        
+    }
+
+    computeMass(): number {
+        
     }
 }
 
@@ -73,6 +89,14 @@ class LineShape extends Shape {
 
     clone () {
         return new PolygonShape(this.restitution, this.density, this.type, this.friction, this.p0, this.p1)
+    }
+    
+    computeAABB(outAABB: AABB, transform: Transform): void {
+        
+    }
+
+    computeMass(): number {
+
     }
 }
 
