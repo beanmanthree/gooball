@@ -220,7 +220,7 @@ export enum BodyType {
     KINEMATIC = 2
 }
 
-class RigidBody {
+export class RigidBody {
     id: number;
     type: BodyType;
 
