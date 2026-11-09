@@ -41,3 +41,4 @@ class camera {
         this.position.x = Math.max(0, Math.min(this.position.x, this.worldWidth - this.width));
         this.position.y = Math.max(0, Math.min(this.position.y, this.worldHeight - this.height));
     }
+}
