@@ -6,6 +6,31 @@ export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 ctx.imageSmoothingEnabled = false;
 ctx.lineCap = "round";
 
+const sprites = new Map<string, HTMLImageElement>();
+
+async function initAssets(callback: () => void): Promise<void> {
+    try {
+        const response = await fetch('./src/png/images.json');
+        const filenames: string[] = await response.json();
+
+        for (const filename of filenames) {
+            const img = new Image();
+            img.src = `./src/png/${filename}`;
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+            });
+            sprites.set(filename, img);
+        } // BRO WHATEVER IM FINISHING THIS TMRW
+    }
+}
+
+//
+//
+// NOTE ivan wants to remove all the functions below cuz performance reasons and also uselessness.
+//
+//
+
 export function clearScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
