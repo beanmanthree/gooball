@@ -1,3 +1,9 @@
+export namespace MathUtil {
+    export function clamp(val: number, min: number, max: number): number {
+        return Math.min(Math.max(val, min), max);
+    }
+}
+
 export class Vector2 {
     x!: number;
     y!: number;
@@ -54,7 +60,7 @@ export class Vector2 {
 
     normalize(r: number = 1): this {
         const length = this.length();
-        if (!length) return this.set(0, 1);
+        if (!length) return this.set(0, 0);
         const ratio = r / length;
         this.x *= ratio;
         this.y *= ratio;
@@ -127,6 +133,18 @@ export class Transform {
         this.cos = Math.cos(this.rotation);
         this.sin = Math.sin(this.rotation);
     }
+
+    transform(v: Vector2): Vector2 {
+        const nx = this.cos * v.x - this.sin * v.y + this.position.x;
+        const ny = this.sin * v.x + this.cos * v.y + this.position.y;
+        return v.set(nx, ny);
+    }
+
+    transformLocal(v: Vector2): Vector2 {
+        const nx = this.cos * v.x + this.sin * v.y;
+        const ny = -this.sin * v.x + this.cos * v.y;
+        return v.set(nx, ny);
+    }
 }
 
 export class AABB {
@@ -162,6 +180,14 @@ export class AABB {
         this.min.y -= margin.y;
         this.max.x += margin.x;
         this.max.y += margin.y;
+        return this;
+    }
+
+    expandUniform(margin: number): this {
+        this.min.x -= margin;
+        this.min.y -= margin;
+        this.max.x += margin;
+        this.max.y += margin;
         return this;
     }
 

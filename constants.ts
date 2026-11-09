@@ -1,3 +1,5 @@
+export const EPSILON = 1e-6;
+
 export const PLAYER_X = 100;
 export const PLAYER_Y = 100;
 export const PLAYER_WIDTH = 20;
