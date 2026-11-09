@@ -71,7 +71,7 @@ export class CircleShape extends Shape {
     }
 }
 
-class PolygonShape extends Shape {
+export class PolygonShape extends Shape {
     vertices: Vector2[] = [];
     normals: Vector2[] = [];
 
@@ -162,7 +162,7 @@ class PolygonShape extends Shape {
     }
 }
 
-class LineShape extends Shape {
+export class LineShape extends Shape {
     p0: Vector2;
     p1: Vector2;
     normal!: Vector2;
