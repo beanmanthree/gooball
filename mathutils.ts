@@ -58,6 +58,12 @@ export class Vector2 {
         return this;
     }
 
+    clamp(min: Vector2, max: Vector2): this {
+        this.x = MathUtil.clamp(this.x, min.x, max.x);
+        this.y = MathUtil.clamp(this.y, min.y, max.y);
+        return this;
+    }
+
     normalize(r: number = 1): this {
         const length = this.length();
         if (!length) return this.set(0, 0);

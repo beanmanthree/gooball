@@ -2,9 +2,9 @@ import { Vector2 } from "./mathutils.js";
 
 class camera {
     position: Vector2;
-    width: number;
+    width: number; // ts should be vector2 cliv
     height: number;
-    worldWidth: number;
+    worldWidth: number;                     // ts should also be vector2 cliv
     worldHeight: number;
 
     constructor(position: Vector2, width: number, height: number, worldWidth: number, worldHeight: number) {
@@ -26,19 +26,14 @@ class camera {
     }
 
     smoothFollow(target: Vector2, smoothingFactor: number): void {
-        const desiredPosition = new Vector2(
-            target.x - this.width / 2,
-            target.y - this.height / 2
-        );
-
-        this.position.x += (desiredPosition.x - this.position.x) * smoothingFactor;
-        this.position.y += (desiredPosition.y - this.position.y) * smoothingFactor;
+        const desiredPosition = target.clone().subtract(new Vector2(this.width / 2, this.height / 2));
+        
+        this.position.add(desiredPosition.subtract(this.position).multiply(smoothingFactor));
 
         this.clamp();
     }
 
     clamp(): void {
-        this.position.x = Math.max(0, Math.min(this.position.x, this.worldWidth - this.width));
-        this.position.y = Math.max(0, Math.min(this.position.y, this.worldHeight - this.height));
+        this.position.clamp(new Vector2(0, 0), new Vector2(this.worldWidth - this.width, this.worldHeight - this.height));
     }
 }
