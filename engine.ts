@@ -4,6 +4,7 @@ import { Player } from './player.js';
 import { RigidBody, PhysicsEngine, ShapeType } from './physics.js';
 import { PLAYER_X, PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT, STROKE_COLOR, FILL_COLOR } from './constants.js';
 import { Structure } from './sructure.js';
+import { Key } from './input.js';
 
 class Engine {
     player: Player;
@@ -24,4 +25,6 @@ class Engine {
         for (const structure of Object.values(this.structures)) {
             structure.draw();
         }
+        this.player.inputMove(+Key.keys['ArrowRight'] - +Key.keys['ArrowLeft'], 0.1); // 0.1 is an arbitrary friction choice
     }
+}
