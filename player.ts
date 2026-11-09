@@ -24,4 +24,5 @@ export class Player {
                 this.body.velocity.x = -PLAYER_MAX_SPEED;
             }
         }
+    }
 }

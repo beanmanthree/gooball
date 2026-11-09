@@ -120,4 +120,15 @@ export enum BodyType {
 class RigidBody {
     type: BodyType;
     shape: Shape;
+    velocity!: Vector2;
+
+    constructor(type: BodyType, shape: Shape) {
+        this.type = type;
+        this.shape = shape;
+        this.velocity = new Vector2();
+    }
+
+    applyForce(force: Vector2, dt: number): void {
+        this.velocity.add(force.multiply(dt));
+    }
 }
