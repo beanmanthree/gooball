@@ -5,7 +5,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let cRect = canvas.getBoundingClientRect();
-addEventListener("resize", (evt: UIEvent) => {
+addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     cRect = canvas.getBoundingClientRect();
