@@ -19,9 +19,9 @@ abstract class Shape {
     friction: number;
     restitution: number;
 
-    constructor(type: ShapeType, desnity: number = 1, friction: number = 0.5, restitution: number = 0.5) {
+    constructor(type: ShapeType, density: number = 1, friction: number = 0.5, restitution: number = 0.5) {
         this.type = type;
-        this.density = desnity;
+        this.density = density;
         this.friction = friction;
         this.restitution = restitution;
     }
@@ -74,9 +74,14 @@ export class CircleShape extends Shape {
 export class PolygonShape extends Shape {
     vertices: Vector2[] = [];
     normals: Vector2[] = [];
-
-    constructor() {
+    
+    constructor(vertices: Vector2[]);
+    constructor(width: number, height: number);
+    constructor();
+    constructor(widthOrVertices?: Vector2[] | number, height?: number) {
         super(ShapeType.POLYGON);
+        if (Array.isArray(widthOrVertices)) this.setVertices(widthOrVertices);
+        else if (typeof widthOrVertices === 'number' && typeof height == 'number') this.setBox(widthOrVertices, height);
     }
 
     override copy(other: PolygonShape): PolygonShape {
@@ -255,4 +260,10 @@ export class RigidBody {
         this.transform = transform.clone();
         this.previousTransform = transform.clone();
     }
+
+    setProperties(restitution: number, density: number, friction: number): void {
+        this.shape.restitution = restitution;
+        this.shape.density = density;
+        this.shape.friction = friction;
+    } // doesn't include precomputation adjustments
 }
